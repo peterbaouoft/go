@@ -105,8 +105,6 @@ func zeroAuto(pp *gc.Progs, n *gc.Node) {
 }
 
 func ginsnop(pp *gc.Progs) *obj.Prog {
-	p := pp.Prog(s390x.AWORD)
-	p.From.Type = obj.TYPE_CONST
-	p.From.Offset = 0x47000000 // nop 0
+	p := pp.Prog(s390x.ANOPH)
 	return p
 }

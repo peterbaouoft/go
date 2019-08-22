@@ -966,6 +966,7 @@ const (
 	AVMSLOG
 	AVMSLEOG
 
+	ANOPH // NOP
 	// binary
 	ABYTE
 	AWORD
