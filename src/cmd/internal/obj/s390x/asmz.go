@@ -3309,6 +3309,8 @@ func (c *ctxtz) asmout(p *obj.Prog, asm *[]byte) {
 			b2 = REGSP
 		}
 		x2 := p.To.Index
+		// This is the case when the values is exceding 20 bit, then we
+		// need to split into two parts (two registers)
 		if d2 < -DISP20/2 || d2 >= DISP20/2 {
 			zRIL(_a, op_LGFI, REGTMP, uint32(d2), asm)
 			if x2 != 0 {
@@ -3317,7 +3319,11 @@ func (c *ctxtz) asmout(p *obj.Prog, asm *[]byte) {
 			x2 = REGTMP
 			d2 = 0
 		}
+		// if op, ok := c.zopstore12(p.As); ok && isU12(d2) {
+		//	zRX(op, uint32(p.From.Reg), uint32(x2), uint32(b2), uint32(d2), asm)
+		//} else {
 		zRXY(c.zopstore(p.As), uint32(p.From.Reg), uint32(x2), uint32(b2), uint32(d2), asm)
+		//} //both loads and stores
 
 	case 36: // mov mem reg (no relocation)
 		d2 := c.regoff(&p.From)
@@ -3326,6 +3332,7 @@ func (c *ctxtz) asmout(p *obj.Prog, asm *[]byte) {
 			b2 = REGSP
 		}
 		x2 := p.From.Index
+
 		if d2 < -DISP20/2 || d2 >= DISP20/2 {
 			zRIL(_a, op_LGFI, REGTMP, uint32(d2), asm)
 			if x2 != 0 {
@@ -3333,8 +3340,12 @@ func (c *ctxtz) asmout(p *obj.Prog, asm *[]byte) {
 			}
 			x2 = REGTMP
 			d2 = 0
+			zRXY(c.zopload(p.As), uint32(p.To.Reg), uint32(x2), uint32(b2), uint32(d2), asm)
+		} else if op, ok := c.zopload12(p.As); ok && isU12(d2) {
+			zRX(op, uint32(p.To.Reg), uint32(x2), uint32(b2), uint32(d2), asm)
+		} else {
+			zRXY(c.zopload(p.As), uint32(p.To.Reg), uint32(x2), uint32(b2), uint32(d2), asm)
 		}
-		zRXY(c.zopload(p.As), uint32(p.To.Reg), uint32(x2), uint32(b2), uint32(d2), asm)
 
 	case 40: // word/byte
 		wd := uint32(c.regoff(&p.From))
@@ -4207,6 +4218,23 @@ func (c *ctxtz) vregoff(a *obj.Addr) int64 {
 
 func (c *ctxtz) regoff(a *obj.Addr) int32 {
 	return int32(c.vregoff(a))
+}
+
+// find if the displacement is within 12 bit
+func isU12(displacement int32) bool {
+	isU12 := displacement >= 0 && displacement < DISP12
+	return isU12
+}
+
+// zopload12 returns the 12 bit displacement RX op given load
+func (c *ctxtz) zopload12(a obj.As) (uint32, bool) {
+	switch a {
+	case AFMOVD:
+		return op_LD, true
+	case AFMOVS:
+		return op_LE, true
+	}
+	return 0, false
 }
 
 // zopload returns the RXY op for the given load
