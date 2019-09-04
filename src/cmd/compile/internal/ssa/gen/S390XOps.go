@@ -146,6 +146,8 @@ func init() {
 		gp21sp  = regInfo{inputs: []regMask{gpsp, gp}, outputs: gponly}
 		gp21tmp = regInfo{inputs: []regMask{gp &^ tmp, gp &^ tmp}, outputs: []regMask{gp &^ tmp}, clobbers: tmp}
 
+		gp22 = regInfo{inputs: []regMask{gpsp | sb, gpsp | sb}, outputs: []regMask{gp, gp}} // Does this clobber any register?
+
 		// R0 evaluates to 0 when used as the number of bits to shift
 		// so we need to exclude it from that operand.
 		sh21 = regInfo{inputs: []regMask{gp, ptr}, outputs: gponly}
@@ -266,6 +268,7 @@ func init() {
 
 		{name: "MULHD", argLength: 2, reg: gp21tmp, asm: "MULHD", typ: "Int64", commutative: true, resultInArg0: true, clobberFlags: true},   // (arg0 * arg1) >> width
 		{name: "MULHDU", argLength: 2, reg: gp21tmp, asm: "MULHDU", typ: "Int64", commutative: true, resultInArg0: true, clobberFlags: true}, // (arg0 * arg1) >> width
+		{name: "LoweredMuluhilo", argLength: 2, reg: gp22},                                                                                   // arg0 * arg1, returns (hi, lo), do we want resultNotInArgs??
 
 		{name: "DIVD", argLength: 2, reg: gp21tmp, asm: "DIVD", resultInArg0: true, clobberFlags: true},   // arg0 / arg1
 		{name: "DIVW", argLength: 2, reg: gp21tmp, asm: "DIVW", resultInArg0: true, clobberFlags: true},   // arg0 / arg1

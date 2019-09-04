@@ -6,7 +6,6 @@ package s390x
 
 import (
 	"math"
-
 	"cmd/compile/internal/gc"
 	"cmd/compile/internal/ssa"
 	"cmd/compile/internal/types"
@@ -157,6 +156,13 @@ func opregregimm(s *gc.SSAGenState, op obj.As, dest, src int16, off int64) *obj.
 }
 
 func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
+	// fmt.Println("Let's see if this works %v", s)
+	// panic ("Test control flow here  -->\n")
+	// fmt.Println("I want to see what is the op in ssa looks like \n", v.Op)
+	// fmt.Println("What is the value now :) \n", int(v.Op))
+	// fmt.Println("Let's see what is the output of the first instruction\n", int(ssa.OpS390XFADDS))
+	// fmt.Println("Let's see what is the value that we care is\n", int(ssa.OpS390XMULHD))
+	// panic("Let's stop the program here and print out the stack trace\n\n")	
 	switch v.Op {
 	case ssa.OpS390XSLD, ssa.OpS390XSLW,
 		ssa.OpS390XSRD, ssa.OpS390XSRW,
@@ -215,6 +221,23 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		r3 := v.Args[0].Reg()
 		i2 := int64(int16(v.AuxInt))
 		opregregimm(s, v.Op.Asm(), r1, r3, i2)
+	case ssa.OpS390XLoweredMuluhilo:
+		// MULHDU	Rarg1, Rarg0, RTEMP
+		// MULLD	Rarg1, Rarg0, Rarg1
+		r1 := v.Args[0].Reg()
+		r2 := v.Args[1].Reg()
+		p := s.Prog(s390x.AMULHDU)
+		p.From.Type = obj.TYPE_REG // defines the from reg of p
+		p.From.Reg = r2
+		p.Reg = r1
+		p.To.Type = obj.TYPE_REG
+		p.To.Reg = s390x.REGTMP // store this result temporaily due to register spilling
+		p1 := s.Prog(s390x.AMULLD)
+		p1.From.Type = obj.TYPE_REG
+		p1.From.Reg = r2
+		p1.Reg = r1
+		p1.To.Type = obj.TYPE_REG
+		p1.To.Reg = r1 // before it was v.Reg1()
 	// 2-address opcode arithmetic
 	case ssa.OpS390XMULLD, ssa.OpS390XMULLW,
 		ssa.OpS390XMULHD, ssa.OpS390XMULHDU,
