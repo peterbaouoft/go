@@ -146,7 +146,7 @@ func init() {
 		gp21sp  = regInfo{inputs: []regMask{gpsp, gp}, outputs: gponly}
 		gp21tmp = regInfo{inputs: []regMask{gp &^ tmp, gp &^ tmp}, outputs: []regMask{gp &^ tmp}, clobbers: tmp}
 
-		gp22 = regInfo{inputs: []regMask{gpsp | sb, gpsp | sb}, outputs: []regMask{gp, gp}} // Does this clobber any register?
+		gp22 = regInfo{inputs: []regMask{gpsp | sb, gpsp | sb}, outputs: []regMask{gp &^ r0 &^ r1 &^ tmp, gp &^ r0 &^ r1 &^ tmp}, clobbers: r0 | r1 | tmp} // Does this clobber any register?
 
 		// R0 evaluates to 0 when used as the number of bits to shift
 		// so we need to exclude it from that operand.

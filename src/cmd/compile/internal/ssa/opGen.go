@@ -25492,9 +25492,10 @@ var opcodeTable = [...]opInfo{
 				{0, 4295023615}, // R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 R11 R12 R14 SP SB
 				{1, 4295023615}, // R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 R11 R12 R14 SP SB
 			},
+			clobbers: 2051, // R0 R1 R11
 			outputs: []outputInfo{
-				{0, 23551}, // R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 R11 R12 R14
-				{1, 23551}, // R0 R1 R2 R3 R4 R5 R6 R7 R8 R9 R11 R12 R14
+				{0, 21500}, // R2 R3 R4 R5 R6 R7 R8 R9 R12 R14
+				{1, 21500}, // R2 R3 R4 R5 R6 R7 R8 R9 R12 R14
 			},
 		},
 	},

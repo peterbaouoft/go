@@ -231,13 +231,13 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 		p.From.Reg = r2
 		p.Reg = r1
 		p.To.Type = obj.TYPE_REG
-		p.To.Reg = s390x.REGTMP // store this result temporaily due to register spilling
+		p.To.Reg = v.Reg0() // store this result temporaily due to register spilling
 		p1 := s.Prog(s390x.AMULLD)
 		p1.From.Type = obj.TYPE_REG
 		p1.From.Reg = r2
 		p1.Reg = r1
 		p1.To.Type = obj.TYPE_REG
-		p1.To.Reg = r1 // before it was v.Reg1()
+		p1.To.Reg = v.Reg1() // before it was v.Reg1()
 	// 2-address opcode arithmetic
 	case ssa.OpS390XMULLD, ssa.OpS390XMULLW,
 		ssa.OpS390XMULHD, ssa.OpS390XMULHDU,
