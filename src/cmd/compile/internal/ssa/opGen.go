@@ -27910,6 +27910,7 @@ var opcodeTable = [...]opInfo{
 	{
 		name:   "MLGR",
 		argLen: 2,
+		asm:    s390x.AMLGR,
 		reg: regInfo{
 			inputs: []inputInfo{
 				{1, 4},     // R2

@@ -3405,7 +3405,7 @@ func (c *ctxtz) asmout(p *obj.Prog, asm *[]byte) {
 		// At this place, we use R2 and R3 as register pair
 		// to do the comuptation
 		zRRE(op_LGR, REG_R3, uint32(r), asm)
-		zRRE(op_MLGR, uint32(r), uint32(p.To.Reg), asm)
+		zRRE(op_MLGR, uint32(r), uint32(p.From.Reg), asm)
 
 	case 67: // fmov $0 freg
 		var opcode uint32

@@ -225,6 +225,21 @@ func ssaGenValue(s *gc.SSAGenState, v *ssa.Value) {
 			v.Fatalf("input[0] and output not in same register %s", v.LongString())
 		}
 		opregreg(s, v.Op.Asm(), r, v.Args[1].Reg())
+	case ssa.OpS390XMLGR:
+		// MLGR RX R2 --> op_LGR R3 R2 &
+		// op_MLGR R2 RX
+		r0 := v.Args[0].Reg()
+		r1 := v.Args[1].Reg()
+		if r1 != s390x.REG_R2 {
+			v.Fatalf("We enforce the usage of R2 in result of MLGR %s", v.LongString())
+		}
+		p := s.Prog(s390x.AMLGR)
+		p.From.Type = obj.TYPE_REG
+		p.From.Reg = r0
+		p.Reg = s390x.REG_R2
+		p.To.Reg = s390x.REG_R2
+		p.To.Type = obj.TYPE_REG
+
 	case ssa.OpS390XFMADD, ssa.OpS390XFMADDS,
 		ssa.OpS390XFMSUB, ssa.OpS390XFMSUBS:
 		r := v.Reg()

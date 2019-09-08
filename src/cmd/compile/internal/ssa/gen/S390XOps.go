@@ -576,6 +576,7 @@ func init() {
 			name:         "MLGR",
 			argLength:    2,
 			reg:          regInfo{inputs: []regMask{gp &^ r3, r2}, outputs: []regMask{r2, r3}},
+			asm:          "MLGR",
 		},
 
 		// pseudo operations to sum the output of the POPCNT instruction
