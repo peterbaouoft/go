@@ -174,6 +174,7 @@ var optab = []Optab{
 	{i: 12, as: ASUB, a1: C_LAUTO, a6: C_REG},
 	{i: 4, as: AMULHD, a1: C_REG, a6: C_REG},
 	{i: 4, as: AMULHD, a1: C_REG, a2: C_REG, a6: C_REG},
+	{i: 62, as: AMLGR, a1: C_REG, a2: C_REG, a6: C_REG},
 	{i: 2, as: ADIVW, a1: C_REG, a2: C_REG, a6: C_REG},
 	{i: 2, as: ADIVW, a1: C_REG, a6: C_REG},
 	{i: 10, as: ASUB, a1: C_REG, a2: C_REG, a6: C_REG},
@@ -3393,6 +3394,18 @@ func (c *ctxtz) asmout(p *obj.Prog, asm *[]byte) {
 		}
 		d2 := c.regoff(&p.To)
 		zRXE(opcode, uint32(p.From.Reg), 0, 0, uint32(d2), 0, asm)
+
+	case 62:
+		r := p.Reg
+		if r != REG_R2 {
+			c.ctxt.Diag("MLGR reserve R2 for computation usage, error usage of MLGR\n")
+		}
+		// MLGR instruction has its multiplicand stored at r +1 location
+		// and the original r's content get ignored
+		// At this place, we use R2 and R3 as register pair
+		// to do the comuptation
+		zRRE(op_LGR, REG_R3, uint32(r), asm)
+		zRRE(op_MLGR, uint32(r), uint32(p.To.Reg), asm)
 
 	case 67: // fmov $0 freg
 		var opcode uint32

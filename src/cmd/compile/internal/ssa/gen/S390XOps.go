@@ -570,6 +570,13 @@ func init() {
 			typ:          "UInt64",
 			clobberFlags: true,
 		},
+		
+
+		{
+			name:         "MLGR",
+			argLength:    2,
+			reg:          regInfo{inputs: []regMask{gp &^ r3, r2}, outputs: []regMask{r2, r3}},
+		},
 
 		// pseudo operations to sum the output of the POPCNT instruction
 		{name: "SumBytes2", argLength: 1, typ: "UInt8"}, // sum the rightmost 2 bytes in arg0 ignoring overflow
